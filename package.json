@@ -1,0 +1,54 @@
+{
+	"name": "car-dashboard",
+	"author": "ChengJian",
+	"license": "MIT",
+	"version": "1.0.0",
+	"scripts": {
+		"dev": "vite",
+		"build:dev": "tsc && vite build --mode development",
+		"build:pro": "tsc && vite build --mode production",
+		"preview": "vite preview",
+		"lint": "npm run lint:eslint & npm run lint:prettier",
+		"lint:eslint": "eslint --fix --ext .js,.ts,.tsx ./src",
+		"lint:prettier": "prettier --write --loglevel warn \"src/**/*.{js,ts,json,tsx,css,less,scss,html,md}\"",
+		"lint:lint-staged": "lint-staged",
+		"prepare": "husky install"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/948764321/car-dashboard.git"
+	},
+	"dependencies": {
+		"immer": "^9.0.15",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"react-router-dom": "^6.21.1"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "^18.4.4",
+		"@commitlint/config-conventional": "^18.4.4",
+		"@types/node": "^20.10.6",
+		"@types/react": "^18.2.15",
+		"@types/react-dom": "^18.2.7",
+		"@typescript-eslint/eslint-plugin": "^6.0.0",
+		"@typescript-eslint/parser": "^6.0.0",
+		"@vitejs/plugin-react": "^4.0.3",
+		"dotenv": "^16.3.1",
+		"eslint": "^8.45.0",
+		"eslint-config-prettier": "^9.1.0",
+		"eslint-plugin-prettier": "^5.1.2",
+		"eslint-plugin-react": "^7.33.2",
+		"eslint-plugin-react-hooks": "^4.6.0",
+		"husky": "^8.0.3",
+		"lint-staged": "^15.2.0",
+		"prettier": "^3.1.1",
+		"rollup-plugin-visualizer": "^5.12.0",
+		"sass": "^1.69.6",
+		"typescript": "^5.0.2",
+		"vite": "^4.4.5",
+		"vite-plugin-compression": "^0.5.1",
+		"vite-plugin-eslint": "^1.8.1",
+		"vite-plugin-html": "^3.2.1",
+		"vite-plugin-svg-icons": "^2.0.1"
+	}
+}

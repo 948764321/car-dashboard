@@ -1,0 +1,132 @@
+@use 'sass:math';
+
+.speed-gauge {
+	position: relative;
+	width: 28.57rem;
+	height: 28.57rem;
+	border-radius: 50%;
+	border: 0.5rem rgb(175, 175, 175) solid;
+	background: linear-gradient(to right bottom, #171717 50%, #0a0a0a 100%);
+
+	// 0 刻度初始偏移角度
+	$initialAngle: 30deg;
+	// 每两个刻度值之间的角度
+	$eachScaleAngle: 20deg;
+
+	.digital-scale {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		z-index: 1;
+
+		.digital-scale-item {
+			position: absolute;
+			color: #fff;
+			font-size: 1.8rem;
+			font-weight: 500;
+
+			&:nth-last-of-type(-n + 2) {
+				color: rgb(253, 49, 4);
+			}
+		}
+
+		$r: 11.2rem;
+		$digitalScaleLength: 17;
+		$digitalScaleStep: $eachScaleAngle;
+
+		@for $i from 1 through $digitalScaleLength {
+			.digital-scale-item:nth-child(#{$i}) {
+				$deg: ($i - 1) * $digitalScaleStep + $initialAngle;
+				$x: -$r * math.sin($deg);
+				$y: $r * math.cos($deg);
+				transform: translate($x, $y);
+			}
+		}
+	}
+
+	.scale {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		z-index: 2;
+
+		.scale-item {
+			position: absolute;
+			width: 0.1rem;
+			height: 0.5rem;
+			background-color: #fff;
+			&:nth-last-of-type(-n + 6) {
+				background-color: rgb(253, 49, 4);
+			}
+		}
+
+		.scale-item.bold {
+			width: 0.2rem;
+			height: 0.9rem;
+		}
+
+		$r: 13.2rem;
+		$scaleLength: 81;
+		$scaleStep: calc($eachScaleAngle / 5);
+
+		@for $i from 1 through $scaleLength {
+			.scale-item:nth-child(#{$i}) {
+				$deg: ($i - 1) * $scaleStep + $initialAngle;
+				$x: -$r * math.sin($deg);
+				$y: $r * math.cos($deg);
+				transform: translate($x, $y) rotate($deg);
+			}
+		}
+	}
+
+	.pointer-box {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		z-index: 3;
+
+		.pointer {
+			position: absolute;
+			width: 0.3rem;
+			height: 13rem;
+			border-radius: 0.2rem;
+			background-color: rgb(253, 49, 4);
+			transform-origin: top;
+			transform: translate(-50%, 0) rotate(calc(var(--pointer-initial-angle) + 30deg));
+		}
+	}
+
+	.gears {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 17.14rem;
+		height: 17.14rem;
+		border-radius: 50%;
+		border: solid 0.2rem rgb(209, 209, 209);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 3rem;
+		color: #fff;
+		background: linear-gradient(to right bottom, #171717 50%, #0a0a0a 100%);
+		transform: translate(-50%, -50%);
+		z-index: 4;
+		&::after {
+			content: 'km/h';
+			position: absolute;
+			top: 80%;
+			left: 50%;
+			color: #fff;
+			font-size: 0.86rem;
+			transform: translate(-50%, 0);
+		}
+	}
+}
