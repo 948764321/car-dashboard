@@ -1,9 +1,0 @@
-/dist/*
-.local
-.github
-/node_modules/**
-
-**/*.svg
-**/*.sh
-
-/public/*
