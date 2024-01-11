@@ -13,7 +13,7 @@ interface SoundManager {
 }
 
 const soundManager: SoundManager = {
-	baseURL: '/',
+	baseURL: './',
 	// @ts-ignore
 	ctx: new (window.AudioContext || window.webkitAudioContext)(),
 	sources: {

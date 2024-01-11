@@ -14,6 +14,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 	const env = loadEnv(mode.mode, process.cwd());
 	const viteEnv = wrapperEnv(env);
 	return {
+		base: './',
 		resolve: {
 			alias: {
 				'@': resolve(__dirname, './src')
