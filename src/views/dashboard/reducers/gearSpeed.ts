@@ -25,6 +25,9 @@ export const gearSpeedReducer = (state: GearSpeedState, action: ActionType) =>
 			case 'SET_SPEED':
 				draftState.speed = action.speed;
 				break;
+			case 'SET_ALL':
+				Object.assign(draftState, action);
+				break;
 			default:
 				return draftState;
 		}
@@ -33,5 +36,5 @@ export const gearSpeedReducer = (state: GearSpeedState, action: ActionType) =>
 export type ActionType = {
 	[key in keyof GearSpeedState]?: any;
 } & {
-	type: 'SET_RPM' | 'SET_GEAR' | 'SET_SPEED';
+	type: 'SET_RPM' | 'SET_GEAR' | 'SET_SPEED' | 'SET_ALL';
 };

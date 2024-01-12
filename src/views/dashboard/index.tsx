@@ -1,11 +1,12 @@
 import { GearSpeedConfig } from '@/config';
 import { DashboardGearEnum } from '@/enums/dashboardEnum';
+import useSounds from '@/hooks/useSounds';
 import { useEffect, useReducer, useRef } from 'react';
+import BreatheTitle from './components/breathe-title';
 import RpmGauge from './components/rpm-gauge';
 import SpeedGauge from './components/speed-gauge';
 import './index.scss';
 import { ActionType, GearSpeedState, gearSpeedReducer, gearSpeedState } from './reducers/gearSpeed';
-import useSounds from '@/hooks/useSounds';
 
 // 档位顺序列表
 const gearOrderList = [
@@ -33,24 +34,28 @@ const Dashboard = () => {
 
 	// 监听外部事件
 	useEffect(() => {
-		const keyDownListener = (e: KeyboardEvent) => {
+		const accListener = (e: KeyboardEvent | TouchEvent) => {
 			if (e instanceof KeyboardEvent && e.key !== 'ArrowUp') return;
 			accRef.current = true;
 			playSound('drive');
 			playSound('catapult');
 		};
-		const keyUpListener = (e: KeyboardEvent) => {
+		const downListener = (e: KeyboardEvent | TouchEvent) => {
 			if (e instanceof KeyboardEvent && e.key !== 'ArrowUp') return;
 			accRef.current = false;
 			stopSound('catapult');
 		};
 
-		document.addEventListener('keyup', keyUpListener);
-		document.addEventListener('keydown', keyDownListener);
+		document.addEventListener('keyup', downListener);
+		document.addEventListener('keydown', accListener);
+		document.addEventListener('touchstart', accListener);
+		document.addEventListener('touchend', downListener);
 
 		return () => {
-			document.removeEventListener('keyup', keyUpListener);
-			document.removeEventListener('keydown', keyDownListener);
+			document.removeEventListener('keyup', downListener);
+			document.removeEventListener('keydown', accListener);
+			document.removeEventListener('touchstart', accListener);
+			document.removeEventListener('touchend', downListener);
 		};
 	}, []);
 
@@ -63,48 +68,23 @@ const Dashboard = () => {
 
 			if (!currentRange) throw Error('空挡，档位设计不合理');
 
-			if (accRef.current) {
-				if (newState.rpm < currentRange.maxRpm) {
-					// 转速 +
-					const rpmAction = { type: 'SET_RPM', rpm: newState.rpm + 0.25 } as const;
-					newState = dispatch(newState, rpmAction);
-				}
-				if (newState.speed < currentRange.maxSpeed) {
-					// 迈速 +
-					const speedAction = { type: 'SET_SPEED', speed: newState.speed + 0.5 } as const;
-					newState = dispatch(newState, speedAction);
-				}
+			const acc = accRef.current;
+			const { maxRpm, minRpm, maxSpeed, minSpeed, gear } = currentRange;
+			const gearIndex = gearOrderList.findIndex(item => item === gear);
 
-				if (newState.speed >= currentRange.maxSpeed) {
-					// 超过当前档位速度，档位 +
-					const gearIndex = gearOrderList.findIndex(item => item === currentRange.gear);
-					const changeGear = gearIndex < gearOrderList.length - 1;
-					const gearAction = { type: 'SET_GEAR', gear: gearOrderList[gearIndex + 1] } as const;
-					if (changeGear) {
-						newState = dispatch(newState, gearAction);
-					}
-				}
-			} else {
-				if (newState.rpm > currentRange.minRpm) {
-					// 转速 -
-					const rpmAction = { type: 'SET_RPM', rpm: Math.max(newState.rpm - 0.2, 0) } as const;
-					newState = dispatch(newState, rpmAction);
-				}
-				if (newState.speed > currentRange.minSpeed) {
-					// 迈速 -
-					const speedAction = { type: 'SET_SPEED', speed: Math.max(newState.speed - 1.5, 0) } as const;
-					newState = dispatch(newState, speedAction);
-				}
-				if (newState.speed <= currentRange.minSpeed) {
-					// 低于当前档位速度，档位 -
-					const gearIndex = gearOrderList.findIndex(item => item === currentRange.gear);
-					const changeGear = gearIndex > 0;
-					const gearAction = { type: 'SET_GEAR', gear: gearOrderList[gearIndex - 1] } as const;
-					if (changeGear) {
-						newState = dispatch(newState, gearAction);
-					}
-				}
+			const nextRpm = acc ? Math.min(newState.rpm + 0.15, maxRpm) : Math.max(newState.rpm - 0.1, minRpm);
+			const nextSpeed = acc ? Math.min(newState.speed + 0.5, maxSpeed) : Math.max(newState.speed - 1.5, minSpeed);
+
+			let nextGear: DashboardGearEnum = newState.gear;
+			if (acc && nextSpeed >= maxSpeed) {
+				nextGear = gearOrderList[Math.min(gearIndex + 1, gearOrderList.length - 1)];
+			} else if (!acc && nextSpeed <= maxSpeed) {
+				nextGear = gearOrderList[Math.max(gearIndex - 1, 0)];
 			}
+
+			const action = { type: 'SET_ALL', rpm: nextRpm, speed: nextSpeed, gear: nextGear } as const;
+			newState = dispatch(newState, action);
+
 			requestId = requestAnimationFrame(() => _handleAcc(newState));
 		};
 
@@ -119,6 +99,7 @@ const Dashboard = () => {
 		<div className='dashboard'>
 			<RpmGauge rpm={gearSpeedStatus.rpm} gear={gearSpeedStatus.gear} />
 			<SpeedGauge speed={gearSpeedStatus.speed} />
+			<BreatheTitle />
 		</div>
 	);
 };

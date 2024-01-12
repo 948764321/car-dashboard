@@ -1,8 +1,11 @@
 .container {
-	width: 100vw;
-	height: 100vh;
+	width: var(--width);
+	height: var(--height);
 	background-color: #000;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+
+	transform: translateX(var(--translate-x)) rotate(var(--rotate-angle));
+	transform-origin: left top;
 }
