@@ -4,6 +4,8 @@ Car Dashboard Experiment with CSS and React
 
 汽车仪表盘，基于 React 主要使用 CSS 实现
 
+![image](./src/assets/e5dd8193db4c4d8ca157fcb7844f9991.gif)
+
 #### CLI Commands
 
 ```bash
